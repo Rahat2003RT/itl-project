@@ -25,8 +25,13 @@
                             <a class="nav-link" href="{{ route('dashboard')}}">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">{{ auth()->user()->name }}</a>
+                            <a class="nav-link" href="{{ route('profile') }}">{{ auth()->user()->name }}</a>
                         </li>
+                        @if (auth()->check() && auth()->user()->role == 'admin')
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.dashboard')}}">Admin</a>
+                        </li>
+                        @endif
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('logout')}}">Logout</a>
                         </li>
@@ -61,6 +66,8 @@
             </div>
         </div>
     </nav>
+
+    @yield('admin-nav')
 
     <main class="main my-3">
         <div class="container">

@@ -68,4 +68,11 @@ class UserController extends Controller
         return view('user.dashboard');
     }
 
+    public function profile(){
+        $user = Auth::user();
+        return view('user.profile', compact('user'));
+        //return view('user.profile');
+    }
+
+
 }

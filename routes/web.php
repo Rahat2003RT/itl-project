@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -25,7 +26,6 @@ Route::middleware('guest')->group(function(){
 });
 
 
-
 Route::middleware('auth')->group(function(){
     Route::get('verify-email', function () {
         return view('user.verify-email');
@@ -36,6 +36,8 @@ Route::middleware('auth')->group(function(){
     
         return redirect()->route('dashboard');
     })->middleware('signed')->name('verification.verify');
+
+    Route::get('profile', [UserController::class, 'profile'])->name('profile');
     
     
     Route::post('/email/verification-notification', function (Request $request) {
@@ -45,6 +47,15 @@ Route::middleware('auth')->group(function(){
     })->middleware('throttle:2,1')->name('verification.send');
 
     Route::get('logout', [UserController::class, 'logout'])->name('logout');
+});
+
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('users', [AdminController::class, 'usersList'])->name('admin.users');
+    Route::post('users/{id}/update-role', [AdminController::class, 'updateUserRole'])->name('admin.updateUserRole');
+    //Route::resource('/users', UserController::class);
+    //Route::get('/settings', [SettingsController::class, 'index'])->name('admin.settings');
+    
 });
 
 
