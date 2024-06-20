@@ -28,4 +28,16 @@ class Category extends Model
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
+
+    // Получить только родительские категории
+    public static function getParentCategories()
+    {
+        return self::whereNull('parent_id')->get();
+    }
+
+    // Получить только дочерние категории
+    public static function getChildCategories()
+    {
+        return self::whereNotNull('parent_id')->get();
+    }
 }

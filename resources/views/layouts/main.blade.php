@@ -19,6 +19,10 @@
                     <a class="nav-link" aria-current="page" href="{{ route('home') }}">Home</a>
                     </li>
 
+                    <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="{{ route('catalog.index') }}">Catalog</a>
+                    </li>
+
                     @if (Route::has('login'))
                         @auth
                         <li class="nav-item">

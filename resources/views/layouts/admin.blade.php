@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'ITL')</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
     <nav class="navbar" style="background-color: #e3f2fd">
@@ -22,7 +23,13 @@
                     <a class="nav-link" href="{{ route('admin.users') }}">Пользователи</a>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link" href="#">Категорий</a>
+                    <a class="nav-link" href="{{ route('admin.categories') }}">Категорий</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.brands') }}">Бренды</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.products') }}">Продукты</a>
                     </li>
                 </ul>
             </div>
