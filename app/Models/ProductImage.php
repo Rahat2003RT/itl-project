@@ -9,7 +9,7 @@ class ProductImage extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_id', 'image_url'];
+    protected $fillable = ['product_id', 'image_url', 'order'];
 
     // Определение отношения "многие к одному" с моделью Product
     public function product()

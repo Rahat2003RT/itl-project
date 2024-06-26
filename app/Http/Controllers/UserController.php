@@ -10,7 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    
+    public function index()
+    {
+        $users = User::paginate();
+        return view('admin.users.index', compact('users'));
+    }
 
     public function create()
     {
@@ -31,6 +35,26 @@ class UserController extends Controller
 
         return redirect()->route('verification.notice');
     }
+
+    public function update(Request $request, $id)
+    {
+        // Получаем данные из запроса
+        $role = $request->input('role');
+    
+        // Находим пользователя по ID
+        $user = User::find($id);
+    
+        if (!$user) {
+            return redirect()->back()->with('error', 'User not found.');
+        }
+    
+        // Обновляем роль пользователя
+        $user->role = $role;
+        $user->save();
+    
+        return redirect()->back()->with('success', 'User role updated successfully.');
+    }
+    
 
     public function login()
     {
@@ -72,6 +96,23 @@ class UserController extends Controller
         $user = Auth::user();
         return view('user.profile', compact('user'));
         //return view('user.profile');
+    }
+
+    public function edit(){
+        $user = Auth::user();
+        return view('user.edit', compact('user'));
+    }
+
+    public function updateProfile(Request $request){
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'delivery_address' => 'nullable|string|max:255',
+        ]);
+
+        Auth::user()->update($request->only('name','delivery_address'));
+
+        return redirect()->route('profile')->with('success', 'Profile updated successfully.');
     }
 
 

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.manager')
 
 
 @section('title', 'Home page')
@@ -41,7 +41,7 @@
                     </td>
                     <td>
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editProductModal{{ $product->id }}">Edit</button>
-                        <form action="{{ route('admin.destroyProduct', $product->id) }}" method="POST" class="d-inline">
+                        <form action="{{ route('manager.products.destroy', $product->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
@@ -57,7 +57,7 @@
                                 <h5 class="modal-title" id="editProductModalLabel{{ $product->id }}">Edit Product</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <form action="{{ route('admin.updateProduct', $product->id) }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('manager.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
                                 <div class="modal-body">
@@ -85,7 +85,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="brand_id" class="form-label">Brand</label>
-                                        <select class="form-control" id="brand_id" name="brand_id" required>
+                                        <select class="form-control" id="brand_id" name="brand_id">
                                             <option value="">None</option>
                                             @foreach ($brands as $brand)
                                                 <option value="{{ $brand->id }}" @if($brand->id == $product->brand_id) selected @endif>{{ $brand->name }}</option>
@@ -132,7 +132,7 @@
 
     <h2>Add New Product</h2>
 
-    <form action="{{ route('admin.products') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('manager.products.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="mb-3">
             <label for="name" class="form-label">Product Name</label>
@@ -156,7 +156,7 @@
         </div>
         <div class="mb-3">
             <label for="brand_id" class="form-label">Brand</label>
-            <select class="form-control" id="brand_id" name="brand_id" required>
+            <select class="form-control" id="brand_id" name="brand_id">
                 <option value="">None</option>
                 @foreach ($brands as $brand)
                     <option value="{{ $brand->id }}">{{ $brand->name }}</option>
@@ -194,7 +194,7 @@ document.getElementById('images').addEventListener('change', function(event) {
 document.querySelectorAll('.remove-image').forEach(button => {
     button.addEventListener('click', function() {
         const imageId = this.getAttribute('data-id');
-        fetch(`/admin/remove-product-image/${imageId}`, {
+        fetch(`/manager/remove-product-image/${imageId}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')

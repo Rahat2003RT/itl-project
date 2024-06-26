@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 
-@section('title', 'Home page')
+@section('title', 'Category')
 
 @section('content')
 <div class="container mt-5">

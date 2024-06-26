@@ -7,12 +7,6 @@
 <div class="container mt-5">
     <h1 class="text-center mb-4">Users List</h1>
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <table class="table table-bordered table-striped table-hover">
         <thead class="thead-dark">
             <tr>
@@ -29,10 +23,12 @@
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td>
-                        <form action="{{ route('admin.updateUserRole', $user->id) }}" method="POST">
+                        <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
                             @csrf
+                            @method('PUT')
                             <select name="role" onchange="this.form.submit()">
                                 <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>User</option>
+                                <option value="manager" {{ $user->role == 'manager' ? 'selected' : '' }}>Manager</option>
                                 <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
                             </select>
                         </form>

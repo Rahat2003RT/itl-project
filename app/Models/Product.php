@@ -9,7 +9,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'price'];
+    protected $fillable = ['name', 'description', 'price', 'brand_id', 'created_by'];
 
     // Продукт может принадлежать многим категориям
     public function categories()
@@ -29,9 +29,30 @@ class Product extends Model
         return $this->hasMany(Review::class);
     }
 
+    public function averageRating()
+    {
+        $totalReviews = $this->reviews()->count();
+        if ($totalReviews === 0) {
+            return 0;
+        }
+
+        $totalRating = $this->reviews()->sum('rating');
+        return $totalRating / $totalReviews;
+    }
+
     public function brand()
     {
         return $this->belongsTo(Brand::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function attributes()
+    {
+        return $this->belongsToMany(Attribute::class, 'product_attributes')->withPivot('value');
     }
     
 }
