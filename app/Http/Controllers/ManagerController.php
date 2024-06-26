@@ -86,7 +86,7 @@ class ManagerController extends Controller
     
         // Update categories
         if ($request->has('categories')) {
-            $product->categories()->sync($request->categories);
+            $product->update(['category_id' => $request->category_id]);
         }
     
         // Update images

@@ -19,7 +19,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['categories', 'brand', 'images'])
+        $products = Product::with(['category', 'brand', 'images'])
         ->paginate(10);
         
         $categories = Category::getChildCategories();
@@ -35,8 +35,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric',
-            'categories' => 'required|array',
-            'categories.*' => 'exists:categories,id',
+            'category' => 'required|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
             'images' => 'nullable|array',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -48,13 +47,11 @@ class ProductController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
+            'category_id' => $request->category,
             'brand_id' => $request->brand_id,
             'created_by' => auth()->id(),
         ]);
-    
-        // Sync categories
-        $product->categories()->sync($request->categories);
-    
+
         // Handle images
         if ($request->hasFile('images')) {
             $order = explode(',', $request->image_order);
@@ -96,8 +93,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric',
-            'categories' => 'required|array',
-            'categories.*' => 'exists:categories,id',
+            'category' => 'required|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'image_order' => 'nullable|string',
@@ -109,11 +105,9 @@ class ProductController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
+            'category_id' => $request->category, 
             'brand_id' => $request->brand_id,
         ]);
-
-        // Обновляем категории продукта
-        $product->categories()->sync($request->categories);
 
         $order = explode(',', $request->image_order);
         $ids = explode(',', $request->image_id);
@@ -208,7 +202,7 @@ class ProductController extends Controller
     public function manage(Product $product)
     {
         // Получить категории, связанные с продуктом
-        $category = $product->categories()->first();
+        $category = $product->category;
         // Получить атрибуты, связанные с первой категорией продукта
         $attributes = Attribute::where('category_id', $category->id)->get();
 

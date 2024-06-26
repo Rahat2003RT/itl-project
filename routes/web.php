@@ -97,7 +97,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('attributes/{attribute}/values/create', [AttributeValueController::class, 'create'])->name('attribute_values.create');
     Route::post('attributes/{attribute}/values', [AttributeValueController::class, 'store'])->name('attribute_values.store');
     Route::get('attribute_values/{attribute_value}/edit', 'AttributeValueController@edit')->name('attribute_values.edit');
-    Route::delete('attribute_values/{attribute_value}', 'AttributeValueController@destroy')->name('attribute_values.destroy');
+    Route::delete('attribute_values/{attribute_value}', [AttributeValueController::class, 'destroy'])->name('attribute_values.destroy');
 
     
 });

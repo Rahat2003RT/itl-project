@@ -19,10 +19,10 @@
         <input type="number" class="form-control" id="price" name="price" value="{{ $product->price }}" required>
     </div>
     <div class="mb-3">
-        <label for="categories" class="form-label">Categories</label>
-        <select class="form-control" id="categories" name="categories[]" multiple required>
+        <label for="category" class="form-label">Categories</label>
+        <select class="form-control" id="category" name="category" required>
             @foreach ($categories as $category)
-                <option value="{{ $category->id }}" {{ $product->categories->contains($category->id) ? 'selected' : '' }}>{{ $category->name }}</option>
+                <option value="{{ $category->id }}" {{ $product->category->id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
             @endforeach
         </select>
     </div>

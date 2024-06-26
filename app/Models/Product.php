@@ -9,12 +9,12 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'price', 'brand_id', 'created_by'];
+    protected $fillable = ['name', 'description', 'price', 'category_id', 'brand_id', 'created_by'];
 
     // Продукт может принадлежать многим категориям
-    public function categories()
+    public function category()
     {
-        return $this->belongsToMany(Category::class);
+        return $this->belongsTo(Category::class);
     }
 
     // Продукт может иметь много изображений

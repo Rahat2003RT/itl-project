@@ -12,15 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->unsignedBigInteger('created_by')->nullable()->after('price');
+            $table->unsignedBigInteger('created_by')->nullable()->after('category_id');
 
             $table->foreign('created_by')
                   ->references('id')
                   ->on('users')
                   ->onDelete('set null'); // Устанавливаем null при удалении пользователя
 
-            // Если хотите, чтобы поле было заполнено датой
-            // $table->timestamp('created_at')->useCurrent();
         });
     }
 

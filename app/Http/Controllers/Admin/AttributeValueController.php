@@ -33,7 +33,7 @@ class AttributeValueController extends Controller
         return redirect()->back()->with('success', 'Attribute value added successfully.');
     }
 
-    public function destroy($attribute_id, $value_id)
+    public function destroy($value_id)
     {
         $value = AttributeValue::findOrFail($value_id);
         $value->delete();

@@ -26,11 +26,7 @@
                     <td>{{ $product->name }}</td>
                     <td>{{ $product->description }}</td>
                     <td>{{ $product->price }}</td>
-                    <td>
-                        @foreach ($product->categories as $category)
-                            {{ $category->name }}@if (!$loop->last), @endif
-                        @endforeach
-                    </td>
+                    <td>{{ $product->category->name }}</td>
                     <td>{{ $product->brand ? $product->brand->name : '' }}</td>
                     <td>
                         
@@ -80,8 +76,8 @@
             <input type="number" class="form-control" id="price" name="price" required>
         </div>
         <div class="mb-3">
-            <label for="categories" class="form-label">Categories</label>
-            <select class="form-control" id="categories" name="categories[]" multiple required>
+            <label for="category" class="form-label">Categories</label>
+            <select class="form-control" id="category" name="category" required>
                 @foreach ($categories as $category)
                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                 @endforeach
