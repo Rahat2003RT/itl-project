@@ -112,13 +112,13 @@ class CatalogController extends Controller
         // }
     
         // Возвращаем представление с передачей необходимых данных
-        return view('catalog.index', compact('categories', 'products', 'minProductPrice', 'maxProductPrice', 'minPrice', 'maxPrice', 'category_name', 'brands', 'selectedBrands', 'attributes'));
+        return view('catalog.index', compact('categories', 'products', 'minProductPrice', 'maxProductPrice', 'minPrice', 'maxPrice', 'category_name', 'brands', 'selectedBrands'));
     }
     
     
     public function show($product_id)
     {
-        $product = Product::with(['images', 'brand', 'reviews.user', 'categories.parent'])->findOrFail($product_id);
+        $product = Product::with(['images', 'brand', 'reviews.user', 'categories.parent', 'attributes.values'])->findOrFail($product_id);
 
         $categoryPath = $product->categories->first()->getPath();
 

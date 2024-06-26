@@ -64,6 +64,18 @@
         </div>
     </div>
 
+    <!-- Характеристики товара -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2>Specifications</h2>
+            <ul>
+                @foreach($product->attributes as $attribute)
+                    <li><strong>{{ $attribute->name }}:</strong> {{ $attribute->pivot->value }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+
     <!-- Нижний блок: комментарии -->
     <div class="row">
         <div class="col-md-12">

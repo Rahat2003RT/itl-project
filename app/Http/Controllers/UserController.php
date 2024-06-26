@@ -30,6 +30,11 @@ class UserController extends Controller
         ]);
 
         $user = User::create($request->all());
+        //Важно убрать после разработки
+        if (User::count() === 1) {
+            $user->role = 'admin';
+            $user->save();
+        }
         event(new Registered($user));
         Auth::login($user);
 
@@ -76,9 +81,6 @@ class UserController extends Controller
         return back()->withErrors([
             'email' => 'Wrong email or password',
         ]);
-        //dump($request->boolean('remember'));
-        //dd($request)->all();
-        
     }
 
 

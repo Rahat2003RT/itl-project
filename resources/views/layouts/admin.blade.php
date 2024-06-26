@@ -63,11 +63,15 @@
                         <a class="nav-link" href="{{ route('admin.categories.index') }}">Категории</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.attributes.index') }}">Категории и их связи</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.brands.index') }}">Бренды</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.products.index') }}">Продукты</a>
+                        <a class="nav-link" href="{{ route('admin.products.index') }}">Товары</a>
                     </li>
+
                 </ul>
             </div>
         </div>

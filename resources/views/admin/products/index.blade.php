@@ -46,6 +46,7 @@
                     </td>
                     <td>
                         <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-primary btn-sm">Edit</a>
+                        <a href="{{ route('admin.products.manage', $product->id) }}" class="btn btn-primary btn-sm">Manage</a>
 
                         <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this product?');">
                             @csrf

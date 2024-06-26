@@ -90,4 +90,11 @@ class Category extends Model
 
         return $path;
     }
+
+    public function attributes()
+    {
+        return $this->hasMany(Attribute::class);
+    }
+    
+
 }

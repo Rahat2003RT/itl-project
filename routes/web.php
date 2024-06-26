@@ -8,6 +8,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Admin\AttributeController;
+use App\Http\Controllers\Admin\AttributeValueController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -79,10 +81,24 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::post('products', [ProductController::class, 'store'])->name('products.store');
     Route::put('products/{product}/update', [ProductController::class, 'update'])->name('products.update');
     Route::get('products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::get('products/{product}/manage', [ProductController::class, 'manage'])->name('products.manage');
+    Route::post('products/{product}/manageUpdate', [ProductController::class, 'manageUpdate'])->name('products.manageUpdate');
     Route::delete('products/{product}/destroy', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::delete('remove-product-image/{id}', [ProductController::class, 'removeProductImage'])->name('admin.removeProductImage');
-    //Route::resource('/users', UserController::class);
-    //Route::get('/settings', [SettingsController::class, 'index'])->name('admin.settings');
+
+
+    // Маршруты для атрибутов
+    Route::get('/attributes', [AttributeController::class, 'index'])->name('attributes.index');
+    Route::get('/attributes/create', [AttributeController::class, 'create'])->name('attributes.create');
+    Route::post('/attributes', [AttributeController::class, 'store'])->name('attributes.store');
+
+    // Маршруты для значений атрибутов
+    Route::get('attributes/{attribute}/values', [AttributeValueController::class, 'index'])->name('attribute_values.index');
+    Route::get('attributes/{attribute}/values/create', [AttributeValueController::class, 'create'])->name('attribute_values.create');
+    Route::post('attributes/{attribute}/values', [AttributeValueController::class, 'store'])->name('attribute_values.store');
+    Route::get('attribute_values/{attribute_value}/edit', 'AttributeValueController@edit')->name('attribute_values.edit');
+    Route::delete('attribute_values/{attribute_value}', 'AttributeValueController@destroy')->name('attribute_values.destroy');
+
     
 });
 

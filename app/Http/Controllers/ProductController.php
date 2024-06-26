@@ -8,6 +8,9 @@ use App\Models\Brand;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\Review;
+use App\Models\Attribute;
+use App\Models\AttributeValue;
+use App\Models\ProductAttribute;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
@@ -201,6 +204,52 @@ class ProductController extends Controller
     
         return redirect()->route('catalog.product.show', $product->id)->with('success', 'Review added successfully!');
     }
+
+    public function manage(Product $product)
+    {
+        // Получить категории, связанные с продуктом
+        $category = $product->categories()->first();
+        // Получить атрибуты, связанные с первой категорией продукта
+        $attributes = Attribute::where('category_id', $category->id)->get();
+
+        // Инициализация массива для хранения значений атрибутов
+        $attributeValues = [];
+
+        foreach ($attributes as $attribute) {
+            $values = AttributeValue::where('attribute_id', $attribute->id)->get();
+            $attributeValues[$attribute->id] = $values;
+        }
+        
+        // Передать продукт и его категории в представление
+        return view('admin.products.manage', compact('product', 'category', 'attributes', 'attributeValues'));
+    }
+
+    public function manageUpdate(Request $request, $productId)
+    {
+        // Получение продукта
+        $product = Product::findOrFail($productId);
+    
+        // Проход по всем атрибутам, которые были переданы из формы
+        foreach ($request->input('attributes', []) as $attributeId => $attributeData) {
+            // Проверка, было ли выбрано удаление значения или передано null
+            if ($attributeData['value'] === null) {
+                // Удаление записи, если передано null
+                ProductAttribute::where('product_id', $product->id)
+                    ->where('attribute_id', $attributeId)
+                    ->delete();
+            } else {
+                // В противном случае обновляем существующую запись или создаем новую
+                ProductAttribute::updateOrCreate(
+                    ['product_id' => $product->id, 'attribute_id' => $attributeId],
+                    ['value' => $attributeData['value']]
+                );
+            }
+        }
+    
+        return redirect()->route('admin.products.index');
+    }
+
+
 
 
 }
