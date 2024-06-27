@@ -9,7 +9,7 @@ class Attribute extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'category_id'];
+    protected $fillable = ['name', 'type', 'category_id'];
 
     public function values()
     {
@@ -19,7 +19,8 @@ class Attribute extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'product_attributes')->withPivot('value');
+        return $this->belongsToMany(Product::class, 'product_attributes')
+                    ->withPivot('value');
     }
 
     public function category()

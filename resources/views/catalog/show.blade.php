@@ -49,9 +49,13 @@
         <div class="col-md-6">
             <!-- Информация о продукте -->
             <h1>{{ $product->name }}</h1>
-            <p>{{ $product->description }}</p>
+            @if($product->description)
+                <p>Описание: {{ $product->description }}</p>
+            @endif
             <p>{{ $product->price }} $</p>
-            <p>Brand: {{ $product->brand ? $product->brand->name : 'No brand assigned' }}</p>
+            @if($product->brand)
+                <p>Brand: {{ $product->brand->name }}</p>
+            @endif
             @if($product->reviews->isNotEmpty())
                 <p>Average Rating: {{ $product->averageRating() }}/5</p>
             @else
@@ -60,21 +64,51 @@
             <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#addToCartModal">
                 Add to Cart
             </button>
-            <a href="{{ route('catalog.filter', ['category_name' => $product->categories->first()->name]) }}" class="btn btn-secondary mt-2">Back to Catalog</a>
+            <a href="{{ route('catalog.filter', ['category_name' => $product->category->name]) }}" class="btn btn-secondary mt-2">Back to Catalog</a>
         </div>
     </div>
 
-    <!-- Характеристики товара -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h2>Specifications</h2>
-            <ul>
-                @foreach($product->attributes as $attribute)
-                    <li><strong>{{ $attribute->name }}:</strong> {{ $attribute->pivot->value }}</li>
-                @endforeach
-            </ul>
+    <!-- Блок общих характеристик -->
+    @if ($generalAttributes && $generalAttributes->isNotEmpty())
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h2>Общие характеристики</h2>
+                <ul>
+                    @foreach ($generalAttributes as $attribute)
+                        <li>{{ $attribute->name }}: {{ $attribute->pivot->value }}</li>
+                    @endforeach
+                </ul>
+            </div>
         </div>
-    </div>
+    @endif
+    
+    <!-- Блок технических характеристик -->
+    @if ($technicalAttributes && $technicalAttributes->isNotEmpty())
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h2>Технические характеристики</h2>
+                <ul>
+                    @foreach ($technicalAttributes as $attribute)
+                        <li>{{ $attribute->name }}: {{ $attribute->pivot->value }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+    
+    <!-- Блок дополнительных характеристик -->
+    @if ($additionalAttributes && $additionalAttributes->isNotEmpty())
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h2>Дополнительные характеристики</h2>
+                <ul>
+                    @foreach ($additionalAttributes as $attribute)
+                        <li>{{ $attribute->name }}: {{ $attribute->pivot->value }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
 
     <!-- Нижний блок: комментарии -->
     <div class="row">

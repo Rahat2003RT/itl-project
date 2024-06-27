@@ -23,18 +23,20 @@ class AttributeController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->all());
         $request->validate([
             'name' => ['required', 'max:255'],
+            'type' => ['required', 'string', 'in:Общая характеристика,Дополнительная характеристика,Техническая характеристика'],
             'category' => ['required', 'exists:categories,id'], // Валидация существования категории
         ]);
     
         Attribute::create([
             'name' => $request->name,
+            'type' => $request->type,
             'category_id' => $request->category,
         ]);
     
         return redirect()->route('admin.attributes.index')->with('success', 'Attribute added successfully.');
     }
+    
     
 }

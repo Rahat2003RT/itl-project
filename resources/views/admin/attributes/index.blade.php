@@ -14,6 +14,7 @@
                     <th>ID</th>
                     <th>Name</th>
                     <th>Category</th>
+                    <th>Type</th>
                     <th>Created At</th>
                     <th>Actions</th>
                 </tr>
@@ -24,6 +25,7 @@
                         <td>{{ $attribute->id }}</td>
                         <td>{{ $attribute->name }}</td>
                         <td>{{ $attribute->category_id}}</td>
+                        <td>{{ $attribute->type}}</td>
                         <td>{{ $attribute->created_at->format('d M Y H:i:s') }}</td>
                         <td>
                             <a href="{{ route('admin.attribute_values.index', $attribute->id) }}" class="btn btn-secondary btn-sm">Manage Values</a>

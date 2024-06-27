@@ -27,13 +27,8 @@ class CatalogController extends Controller
             $category = Category::where('name', $category_name)->firstOrFail();
             $categoryIds = $category->getDescendantsAndSelf()->pluck('id')->toArray();
     
-            $minProductPrice = Product::whereHas('categories', function ($query) use ($categoryIds) {
-                $query->whereIn('categories.id', $categoryIds);
-            })->min('price');
-    
-            $maxProductPrice = Product::whereHas('categories', function ($query) use ($categoryIds) {
-                $query->whereIn('categories.id', $categoryIds);
-            })->max('price');
+            $minProductPrice = Product::whereIn('category_id', $categoryIds)->min('price');
+            $maxProductPrice = Product::whereIn('category_id', $categoryIds)->max('price');
         }
     
         // Получаем значение минимальной и максимальной цены из запроса, учитывая ограничения
@@ -52,9 +47,7 @@ class CatalogController extends Controller
     
         // Если указана категория, фильтруем продукты по ней и её потомкам
         if ($category_name) {
-            $query->whereHas('categories', function ($query) use ($categoryIds) {
-                $query->whereIn('categories.id', $categoryIds);
-            });
+            $query->whereIn('category_id', $categoryIds);
         }
     
         // Фильтруем продукты по цене
@@ -66,6 +59,21 @@ class CatalogController extends Controller
             $query->whereIn('brand_id', $selectedBrands);
         }
     
+        // Фильтр по атрибутам
+        $selectedAttributes = $request->input('attributes', []);
+        if (!empty($selectedAttributes)) {
+            $query->where(function ($query) use ($selectedAttributes) {
+                foreach ($selectedAttributes as $attributeId => $values) {
+                    $query->orWhereHas('attributes', function ($query) use ($attributeId, $values) {
+                        $query->where('attribute_id', $attributeId)
+                              ->whereIn('value', $values); // используем значения вместо ID
+                    });
+                }
+            });
+    
+            //dd($query->toSql(), $query->getBindings());
+        }
+    
         // Применяем сортировку
         if ($request->has('sort')) {
             switch ($request->sort) {
@@ -75,55 +83,70 @@ class CatalogController extends Controller
                 case 'price_desc':
                     $query->orderBy('price', 'desc');
                     break;
-                // Другие варианты сортировки, если необходимо
+                case 'popularity':
+                    $query->orderBy('popularity', 'desc');
+                    break;
                 default:
                     $query->orderBy('created_at', 'desc');
             }
         } else {
-            // Сортировка по умолчанию
             $query->orderBy('created_at', 'desc');
         }
     
         // Получаем список всех брендов с количеством продуктов по каждому бренду
         $brands = Brand::withCount(['products' => function ($query) use ($categoryIds) {
             if (!empty($categoryIds)) {
-                $query->whereHas('categories', function ($query) use ($categoryIds) {
-                    $query->whereIn('categories.id', $categoryIds);
-                });
+                $query->whereIn('category_id', $categoryIds);
             }
         }])->get();
     
-        // Пагинируем результаты запроса (по 12 продуктов на странице)
+        // Получаем список продуктов с учетом всех фильтров и пагинируем их
         $products = $query->paginate(12);
-
-        // $attributes = [];
-        // if ($category_name === 'мониторы') {
-        //     $attributes = Attribute::whereIn('name', ['размер монитора', 'частота кадров'])->get();
-        // }
-
-        // // Применяем фильтры для атрибутов
-        // foreach ($attributes as $attribute) {
-        //     if ($request->has($attribute->name)) {
-        //         $query->whereHas('attributes', function ($q) use ($request, $attribute) {
-        //             $q->where('attributes.id', $attribute->id)
-        //             ->where('product_attributes.value', $request->input($attribute->name));
-        //         });
-        //     }
-        // }
     
-        // Возвращаем представление с передачей необходимых данных
-        return view('catalog.index', compact('categories', 'products', 'minProductPrice', 'maxProductPrice', 'minPrice', 'maxPrice', 'category_name', 'brands', 'selectedBrands'));
+        // Получаем список всех атрибутов и их значений для фильтрации
+        if ($category_name !== null) {
+            $attributes = Attribute::where('category_id', $category->id)
+                                    ->with('values')
+                                    ->get();
+        } else {
+            $attributes = Attribute::with('values')->get();
+        }
+    
+        // Отладочный вывод
+        // dd($query->toSql(), $query->getBindings(), $products);
+    
+        return view('catalog.index', compact('categories', 'products', 'minProductPrice', 'maxProductPrice', 'minPrice', 'maxPrice', 'category_name', 'brands', 'attributes', 'selectedBrands', 'selectedAttributes'));
     }
+    
+    
+    
+
     
     
     public function show($product_id)
     {
-        $product = Product::with(['images', 'brand', 'reviews.user', 'categories.parent', 'attributes.values'])->findOrFail($product_id);
+        $product = Product::with([
+            'images', 
+            'brand', 
+            'reviews.user', 
+            'category.parent',
+            'attributes' => function ($query) {
+                $query->orderBy('type', 'asc'); // Сортируем атрибуты по типу
+            },
+            'attributes.values'
+        ])->findOrFail($product_id);
 
-        $categoryPath = $product->categories->first()->getPath();
-
-        return view('catalog.show', compact('product', 'categoryPath'));
+        $groupedAttributes = $product->attributes->groupBy('type');
+        $generalAttributes = $groupedAttributes->get('Общая характеристика');
+        $technicalAttributes = $groupedAttributes->get('Дополнительная характеристика');
+        $additionalAttributes = $groupedAttributes->get('Техническая характеристика');
+    
+        $categoryPath = null;
+        if ($product->category && $product->category->parent) {
+            $categoryPath = $product->category->getPath();
+        }
+    
+        return view('catalog.show', compact('product', 'categoryPath', 'generalAttributes', 'technicalAttributes', 'additionalAttributes'));
     }
-
 
 }

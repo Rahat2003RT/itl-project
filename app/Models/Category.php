@@ -14,7 +14,7 @@ class Category extends Model
     // Категория может иметь много продуктов
     public function products()
     {
-        return $this->belongsToMany(Product::class);
+        return $this->hasMany(Product::class, 'category_id');
     }
 
     // Категория может иметь подкатегории
