@@ -18,25 +18,39 @@ class AttributeValueController extends Controller
         return view('admin.attribute_values.index', compact('attribute', 'category', 'attribute_values'));
     }
 
-    public function store(Request $request, $attribute_id)
+    public function store(Request $request, $attribute)
+    {
+        $request->validate([
+            'value' => ['required', 'max:255'],
+        ]);
+    
+        $attribute = Attribute::findOrFail($attribute);
+        $attribute->values()->create([
+            'attribute_id' => $attribute,
+            'value' => $request->value,
+        ]);
+    
+        return redirect()->back()->with('success', 'Attribute value added successfully.');
+    }
+
+    public function update(Request $request, $attribute_value_id)
     {
         $request->validate([
             'value' => ['required', 'max:255'],
         ]);
 
-        $attribute = Attribute::findOrFail($attribute_id);
-        $attribute->values()->create([
-            'attribute_id' => $attribute_id,
+        $attribute_value = AttributeValue::findOrFail($attribute_value_id);
+        $attribute_value->update([
             'value' => $request->value,
         ]);
 
-        return redirect()->back()->with('success', 'Attribute value added successfully.');
+        return redirect()->back()->with('success', 'Attribute value updated successfully.');
     }
+    
 
-    public function destroy($value_id)
+    public function destroy(AttributeValue $attribute_value)
     {
-        $value = AttributeValue::findOrFail($value_id);
-        $value->delete();
+        $attribute_value->delete();
 
         return redirect()->back()->with('success', 'Attribute value deleted successfully.');
     }

@@ -12,8 +12,8 @@ use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\ProductAttribute;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Log;
+// use Illuminate\Database\Eloquent\ModelNotFoundException;
+// use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -203,15 +203,15 @@ class ProductController extends Controller
     {
         // Получить категории, связанные с продуктом
         $category = $product->category;
-        // Получить атрибуты, связанные с первой категорией продукта
-        $attributes = Attribute::where('category_id', $category->id)->get();
+
+        // Получить атрибуты с их значениями, связанные с категорией продукта
+        $attributes = Attribute::with('values')->where('category_id', $category->id)->get();
 
         // Инициализация массива для хранения значений атрибутов
         $attributeValues = [];
-
+        
         foreach ($attributes as $attribute) {
-            $values = AttributeValue::where('attribute_id', $attribute->id)->get();
-            $attributeValues[$attribute->id] = $values;
+            $attributeValues[$attribute->id] = $attribute->values;
         }
         
         // Передать продукт и его категории в представление
@@ -225,22 +225,24 @@ class ProductController extends Controller
     
         // Проход по всем атрибутам, которые были переданы из формы
         foreach ($request->input('attributes', []) as $attributeId => $attributeData) {
-            // Проверка, было ли выбрано удаление значения или передано null
-            if ($attributeData['value'] === null) {
+            $attributeValueId = $attributeData['attribute_value_id'];
+    
+            // Проверка, было ли передано значение атрибута
+            if ($attributeValueId !== null) {
+                // Обновляем существующую запись или создаем новую
+                ProductAttribute::updateOrCreate(
+                    ['product_id' => $product->id, 'attribute_id' => $attributeId],
+                    ['attribute_value_id' => $attributeValueId]
+                );
+            } else {
                 // Удаление записи, если передано null
                 ProductAttribute::where('product_id', $product->id)
                     ->where('attribute_id', $attributeId)
                     ->delete();
-            } else {
-                // В противном случае обновляем существующую запись или создаем новую
-                ProductAttribute::updateOrCreate(
-                    ['product_id' => $product->id, 'attribute_id' => $attributeId],
-                    ['value' => $attributeData['value']]
-                );
             }
         }
     
-        return redirect()->route('admin.products.index');
+        return redirect()->route('admin.products.index')->with('success', 'Product attributes updated successfully.');
     }
 
 

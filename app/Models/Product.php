@@ -4,12 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Product extends Model
 {
     use HasFactory;
 
+    use Searchable;
+
     protected $fillable = ['name', 'description', 'price', 'category_id', 'brand_id', 'created_by'];
+
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'description' => $this->description,
+            // Добавьте другие поля, которые вы хотите индексировать
+        ];
+    }
+
 
     // Продукт может принадлежать многим категориям
     public function category()

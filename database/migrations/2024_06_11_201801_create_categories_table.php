@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedBigInteger('parent_id')->nullable(); // Для иерархии категорий
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->timestamps();
 
             $table->foreign('parent_id')->references('id')->on('categories')->onDelete('cascade');

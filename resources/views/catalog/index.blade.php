@@ -19,6 +19,12 @@
 
             <h4 class="mt-4">Filters</h4>
             <form action="{{ route('catalog.index', ['category_name' => $category_name]) }}" method="GET">
+                <!-- Поле поиска -->
+                <div class="form-group mt-3">
+                    <label for="q">Search</label>
+                    <input type="text" name="q" id="q" class="form-control" value="{{ request('q') }}" placeholder="Search products...">
+                </div>
+
                 @if ($brands->where('products_count', '>', 0)->count() > 0)
                     <div class="form-group">
                         <h5>Brands</h5>
@@ -47,7 +53,7 @@
                                         @foreach($attribute->values as $value)
                                             <li>
                                                 <label class="form-check-label">
-                                                    <input type="checkbox" name="attributes[{{ $attribute->id }}][]" value="{{ $value->value }}" class="form-check-input" {{ isset($selectedAttributes[$attribute->id]) && in_array($value->value, $selectedAttributes[$attribute->id]) ? 'checked' : '' }}>
+                                                    <input type="checkbox" name="attributes[{{ $attribute->id }}][]" value="{{ $value->id }}" class="form-check-input" {{ isset($selectedAttributes[$attribute->id]) && in_array($value->id, $selectedAttributes[$attribute->id]) ? 'checked' : '' }}>
                                                     {{ $value->value }}
                                                 </label>
                                             </li>
@@ -90,7 +96,7 @@
                 @foreach($products as $product)
                     <div class="col-md-4">
                         <div class="card mb-4">
-                        <img src="{{ $product->images->isNotEmpty() ? asset('storage/' . $product->images->first()->image_url) : asset('storage/default/default-product.png') }}" class="card-img-top img-fluid" alt="{{ $product->name }}">
+                            <img src="{{ $product->images->isNotEmpty() ? asset('storage/' . $product->images->first()->image_url) : asset('storage/default/default-product.png') }}" class="card-img-top img-fluid" alt="{{ $product->name }}">
                             <div class="card-body">
                                 <h5 class="card-title">{{ $product->name }}</h5>
                                 <p class="card-text">{{ $product->price }}</p>
@@ -107,3 +113,4 @@
     </div>
 </div>
 @endsection
+    

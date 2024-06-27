@@ -52,8 +52,19 @@
                                     <li><a class="dropdown-item" href="#">Уведомлений пока нет</a></li>
                                 </ul>
                             </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link" href="#" id="cartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-shopping-cart"></i> <!-- Иконка корзины -->
+                                    <span class="badge bg-danger">0</span> <!-- Пример количества товаров в корзине -->
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cartDropdown">
+                                    <li><a class="dropdown-item" href="#">Ваша корзина пуста</a></li>
+                                </ul>
+                            </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('logout')}}">Logout</a>
+                                <a class="nav-link" href="{{ route('logout')}}">
+                                    <i class="fas fa-sign-out-alt"></i> <!-- Иконка выхода -->
+                                </a>
                             </li>
                         @else
                             <li class="nav-item">

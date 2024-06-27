@@ -61,17 +61,25 @@ class CatalogController extends Controller
     
         // Фильтр по атрибутам
         $selectedAttributes = $request->input('attributes', []);
+
         if (!empty($selectedAttributes)) {
-            $query->where(function ($query) use ($selectedAttributes) {
+            $query->whereHas('attributes', function ($query) use ($selectedAttributes) {
                 foreach ($selectedAttributes as $attributeId => $values) {
-                    $query->orWhereHas('attributes', function ($query) use ($attributeId, $values) {
+                    $query->where(function ($query) use ($attributeId, $values) {
                         $query->where('attribute_id', $attributeId)
-                              ->whereIn('value', $values); // используем значения вместо ID
+                              ->whereIn('attribute_value_id', $values);
                     });
                 }
             });
+        }
     
-            //dd($query->toSql(), $query->getBindings());
+        // Поиск по ключевому слову
+        $searchTerm = $request->input('q');
+        if ($searchTerm) {
+            $query->where(function ($query) use ($searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%')
+                      ->orWhere('description', 'like', '%' . $searchTerm . '%');
+            });
         }
     
         // Применяем сортировку
@@ -112,12 +120,9 @@ class CatalogController extends Controller
             $attributes = Attribute::with('values')->get();
         }
     
-        // Отладочный вывод
-        // dd($query->toSql(), $query->getBindings(), $products);
-    
-        return view('catalog.index', compact('categories', 'products', 'minProductPrice', 'maxProductPrice', 'minPrice', 'maxPrice', 'category_name', 'brands', 'attributes', 'selectedBrands', 'selectedAttributes'));
+        // Возвращаем представление с результатами
+        return view('catalog.index', compact('categories', 'products', 'minProductPrice', 'maxProductPrice', 'minPrice', 'maxPrice', 'category_name', 'brands', 'attributes', 'selectedBrands', 'selectedAttributes', 'searchTerm'));
     }
-    
     
     
 
