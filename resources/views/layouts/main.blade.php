@@ -8,6 +8,29 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        .cart-dropdown .dropdown-menu {
+            min-width: 300px; /* Увеличение ширины всплывающего окна корзины */
+        }
+        .cart-dropdown .dropdown-item img {
+            width: 80px; /* Увеличение размера изображения */
+            height: 80px;
+            object-fit: cover;
+            margin-right: 10px; /* Отступ между изображением и текстом */
+        }
+        .cart-dropdown .dropdown-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .cart-dropdown .dropdown-item .item-info {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+        .cart-dropdown .btn-sm {
+            padding: 0.25rem 0.5rem;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
@@ -52,18 +75,40 @@
                                     <li><a class="dropdown-item" href="#">Уведомлений пока нет</a></li>
                                 </ul>
                             </li>
-                            <li class="nav-item dropdown">
+                            <li class="nav-item dropdown cart-dropdown">
                                 <a class="nav-link" href="#" id="cartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-shopping-cart"></i> <!-- Иконка корзины -->
-                                    <span class="badge bg-danger">0</span> <!-- Пример количества товаров в корзине -->
+                                    <i class="fas fa-shopping-cart"></i>
+                                    <span class="badge bg-danger">{{ $cartItems->count() }}</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cartDropdown">
-                                    <li><a class="dropdown-item" href="#">Ваша корзина пуста</a></li>
+                                    @if ($cartItems->isEmpty())
+                                        <li><a class="dropdown-item" href="#">Ваша корзина пуста</a></li>
+                                    @else
+                                        @foreach($cartItems as $item)
+                                            <li class="dropdown-item">
+                                                <div class="d-flex align-items-center">
+                                                    @if ($item->product->images->first())
+                                                        <img src="{{ asset('storage/' . $item->product->images->first()->image_url) }}" alt="{{ $item->product->name }}" class="img-thumbnail">
+                                                    @endif
+                                                    <div class="item-info">
+                                                        <span>{{ $item->product->name }}</span>
+                                                        <span>x {{ $item->quantity }}</span>
+                                                    </div>
+                                                </div>
+                                                <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                                </form>
+                                            </li>
+                                        @endforeach
+                                        <li><a class="dropdown-item text-center" href="{{ route('cart.index') }}">Перейти в корзину</a></li>
+                                    @endif
                                 </ul>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('logout')}}">
-                                    <i class="fas fa-sign-out-alt"></i> <!-- Иконка выхода -->
+                                    <i class="fas fa-sign-out-alt"></i>
                                 </a>
                             </li>
                         @else

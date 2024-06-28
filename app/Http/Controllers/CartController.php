@@ -30,20 +30,11 @@ class CartController extends Controller
         return redirect()->route('cart.index')->with('success', 'Product added to cart!');
     }
 
-    public function remove(Request $request)
+    public function remove($id)
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-        ]);
-
-        $cartItem = CartItem::where('user_id', Auth::id())
-            ->where('product_id', $request->product_id)
-            ->first();
-
-        if ($cartItem) {
-            $cartItem->delete();
-        }
-
-        return redirect()->route('cart.index')->with('success', 'Product removed from cart!');
+        $cartItem = CartItem::findOrFail($id);
+        $cartItem->delete();
+    
+        return redirect()->back()->with('success', 'Item removed from cart.');
     }
 }

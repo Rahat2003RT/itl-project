@@ -117,7 +117,7 @@ class CatalogController extends Controller
                                     ->with('values')
                                     ->get();
         } else {
-            $attributes = Attribute::with('values')->get();
+            $attributes = collect();
         }
     
         // Возвращаем представление с результатами

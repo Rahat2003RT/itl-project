@@ -21,8 +21,9 @@
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->product->price * $item->quantity }}</td>
                         <td>
-                            <form action="{{ route('cart.remove') }}" method="POST">
+                            <form action="{{ route('cart.remove', $item->id) }}" method="POST">
                                 @csrf
+                                @method('DELETE')
                                 <input type="hidden" name="product_id" value="{{ $item->product_id }}">
                                 <button type="submit" class="btn btn-danger">Удалить</button>
                             </form>
