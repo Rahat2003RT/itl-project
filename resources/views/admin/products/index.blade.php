@@ -1,22 +1,82 @@
 @extends('layouts.admin')
 
-@section('title', 'Products')
+@section('title', 'Товары')
+
+@push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-container .select2-selection--multiple {
+            height: auto;
+            min-height: 38px;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #007bff;
+            border-color: #007bff;
+            padding: 0 10px;
+            color: #fff;
+            border-radius: 0.2rem;
+            margin-top: 5px;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: #fff;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .preview-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease-in-out;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .preview-image:hover {
+            transform: scale(1.2);
+            z-index: 1;
+        }
+
+        .sortable-placeholder {
+            border: 2px dashed #ccc;
+            background: #f9f9f9;
+            height: 50px;
+            width: 50px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .description-cell {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+@endpush
 
 @section('content')
 <div class="container mt-5">
-    <h1>Products</h1>
+    <h1>Товары</h1>
 
-    <table class="table table-bordered">
+    <table class="table">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Category</th>
-                <th>Brand</th>
-                <th>Images</th>
-                <th>Actions</th>
+                <th>Название</th>
+                <th>Описание</th>
+                <th>Цена</th>
+                <th>Категория</th>
+                <th>Бренд</th>
+                <th>Изображения</th>
+                <th>Действия</th>
             </tr>
         </thead>
         <tbody>
@@ -24,30 +84,28 @@
                 <tr>
                     <td>{{ $product->id }}</td>
                     <td>{{ $product->name }}</td>
-                    <td>{{ $product->description }}</td>
+                    <td class="description-cell" title="{{ $product->description }}">{{ $product->description }}</td>
                     <td>{{ $product->price }}</td>
                     <td>{{ $product->category->name }}</td>
                     <td>{{ $product->brand ? $product->brand->name : '' }}</td>
                     <td>
-                        
-                    @if ($product->images->isNotEmpty())
-                        <div id="images-container">
-                            @foreach ($product->images as $image)
-                                <img src="{{ asset('storage/' . $image->image_url) }}" data-image-id="{{ $image->order }}" alt="Product Image" width="50" class="img-thumbnail">
-                            @endforeach
-                        </div>
-                    @else
-                        No Images
-                    @endif
+                        @if ($product->images->isNotEmpty())
+                            <div id="images-container">
+                                @foreach ($product->images as $image)
+                                    <img src="{{ asset('storage/' . $image->image_url) }}" data-image-id="{{ $image->order }}" alt="Изображение товара" class="preview-image">
+                                @endforeach
+                            </div>
+                        @else
+                            Нет изображений
+                        @endif
                     </td>
                     <td>
-                        <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-primary btn-sm">Edit</a>
-                        <a href="{{ route('admin.products.manage', $product->id) }}" class="btn btn-primary btn-sm">Manage</a>
-
-                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                        <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-primary btn-sm">Редактировать</a>
+                        <a href="{{ route('admin.products.manage', $product->id) }}" class="btn btn-primary btn-sm">Управление атрибутами</a>
+                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить этот товар?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
                         </form>
                     </td>
                 </tr>
@@ -59,24 +117,24 @@
         {{ $products->links() }}
     </div>
 
-    <h2>Add New Product</h2>
+    <h2>Добавить новый товар</h2>
 
     <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="mb-3">
-            <label for="name" class="form-label">Product Name</label>
+            <label for="name" class="form-label">Название товара</label>
             <input type="text" class="form-control" id="name" name="name" required>
         </div>
         <div class="mb-3">
-            <label for="description" class="form-label">Product Description</label>
+            <label for="description" class="form-label">Описание товара</label>
             <textarea class="form-control" id="description" name="description" required></textarea>
         </div>
         <div class="mb-3">
-            <label for="price" class="form-label">Product Price</label>
+            <label for="price" class="form-label">Цена товара</label>
             <input type="number" class="form-control" id="price" name="price" required>
         </div>
         <div class="mb-3">
-            <label for="category" class="form-label">Categories</label>
+            <label for="category" class="form-label">Категория</label>
             <select class="form-control" id="category" name="category" required>
                 @foreach ($categories as $category)
                     <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -84,24 +142,24 @@
             </select>
         </div>
         <div class="mb-3">
-            <label for="brand_id" class="form-label">Brand</label>
+            <label for="brand_id" class="form-label">Бренд</label>
             <select class="form-control" id="brand_id" name="brand_id">
-                <option value="">None</option>
+                <option value="">Нет</option>
                 @foreach ($brands as $brand)
                     <option value="{{ $brand->id }}">{{ $brand->name }}</option>
                 @endforeach
             </select>
         </div>
         <div class="mb-3">
-            <label for="images" class="form-label">Product Images</label>
+            <label for="images" class="form-label">Изображения товара</label>
             <input type="file" class="form-control" id="images" name="images[]" multiple>
         </div>
         <div class="mb-3">
-            <p>Удерживай и перетаскивай для определения порядка:</p>
+            <p>Удерживайте и перетаскивайте для определения порядка:</p>
             <ul id="sortable" class="list-group d-flex flex-wrap flex-row"></ul>
             <input type="hidden" name="image_order" id="image_order">
         </div>
-        <button type="submit" class="btn btn-primary">Add Product</button>
+        <button type="submit" class="btn btn-primary">Добавить товар</button>
     </form>
 </div>
 
@@ -172,9 +230,6 @@ document.getElementById('images').addEventListener('change', async function(even
     });
 </script>
 
-
-
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // Получаем контейнер с изображениями
@@ -195,9 +250,8 @@ document.addEventListener('DOMContentLoaded', () => {
         imagesContainer.innerHTML = '';
         images.forEach(img => imagesContainer.appendChild(img));
     } else {
-        console.error('Images container not found.');
+        console.error('Контейнер с изображениями не найден.');
     }
 });
 </script>
-
 @endsection

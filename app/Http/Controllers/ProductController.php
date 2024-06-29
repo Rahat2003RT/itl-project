@@ -19,8 +19,10 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['category', 'brand', 'images'])
-        ->paginate(10);
+        $products = Product::with(['category', 'brand', 'images' => function ($query) {
+            $query->orderBy('order', 'asc'); // Сортировка по возрастанию порядка (можно выбрать 'desc' для сортировки по убыванию)
+        }])->paginate(10);
+        
         
         $categories = Category::getChildCategories();
         $brands = Brand::all();

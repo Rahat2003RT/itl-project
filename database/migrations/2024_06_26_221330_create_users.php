@@ -16,7 +16,6 @@ return new class extends Migration
             'email' => 'rahat.turmyshov@mail.ru',
             'email_verified_at' => now(), // Устанавливаем верифицированный email
             'password' => Hash::make('123'), // Хэшируем пароль
-            'delivery_address' => 'УЛ Солнечная',
             'role' => 'admin', // Устанавливаем роль admin
             'created_at' => now(),
             'updated_at' => now(),

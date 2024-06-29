@@ -70,4 +70,8 @@ class Product extends Model
                     ->withPivot('attribute_value_id');
     }
     
+    public function collections()
+    {
+        return $this->belongsToMany(Collection::class, 'collection_product');
+    }
 }

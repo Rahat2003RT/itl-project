@@ -68,87 +68,35 @@
         </div>
     </div>
 
-    <!-- Блок общих характеристик -->
-    @if ($generalAttributes && $generalAttributes->isNotEmpty())
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <h2>Общие характеристики</h2>
-                <ul>
-                    @foreach ($generalAttributes as $attribute)
-                        <li>{{ $attribute->name }}: {{ $attribute->pivot->value }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        </div>
-    @endif
-    
-    <!-- Блок технических характеристик -->
-    @if ($technicalAttributes && $technicalAttributes->isNotEmpty())
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <h2>Технические характеристики</h2>
-                <ul>
-                    @foreach ($technicalAttributes as $attribute)
-                        <li>{{ $attribute->name }}: {{ $attribute->pivot->value }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        </div>
-    @endif
-    
-    <!-- Блок дополнительных характеристик -->
-    @if ($additionalAttributes && $additionalAttributes->isNotEmpty())
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <h2>Дополнительные характеристики</h2>
-                <ul>
-                    @foreach ($additionalAttributes as $attribute)
-                        <li>{{ $attribute->name }}: {{ $attribute->pivot->value }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        </div>
-    @endif
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="characteristics-tab" data-bs-toggle="tab" href="#characteristics" role="tab" aria-controls="characteristics" aria-selected="true">Характеристики</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="reviews-tab" data-bs-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Отзывы</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="related-products-tab" data-bs-toggle="tab" href="#related-products" role="tab" aria-controls="related-products" aria-selected="false">Товары из коллекции</a>
+        </li>
+    </ul>
 
-    <!-- Нижний блок: комментарии -->
-    <div class="row">
-        <div class="col-md-12">
-            <h2>Reviews</h2>
-            @foreach($product->reviews as $review)
-                <div class="card mb-2">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $review->user->name }}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Rating: {{ $review->rating }}/5</h6>
-                        <p class="card-text">{{ $review->comment }}</p>
-                        <p class="card-text"><small class="text-muted">{{ $review->created_at->format('d M Y') }}</small></p>
-                    </div>
-                </div>
-            @endforeach
+    <div class="tab-content" id="myTabContent">
+        <!-- Панель для характеристик -->
+        <div class="tab-pane fade show active" id="characteristics" role="tabpanel" aria-labelledby="characteristics-tab">
+            <!-- Ваш код для вывода характеристик здесь -->
+            @include('partials.catalog.characteristics')
         </div>
-    </div>
 
-    <!-- Форма для написания комментария -->
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <h2>Add a Review</h2>
-            <form action="{{ route('catalog.product.review', $product->id) }}" method="POST">
-                @csrf
-                <div class="form-group">
-                    <label for="rating">Rating</label>
-                    <select name="rating" id="rating" class="form-control" required>
-                        <option value="5">5 - Excellent</option>
-                        <option value="4">4 - Good</option>
-                        <option value="3">3 - Average</option>
-                        <option value="2">2 - Poor</option>
-                        <option value="1">1 - Terrible</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="comment">Comment</label>
-                    <textarea name="comment" id="comment" class="form-control" rows="4" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit Review</button>
-            </form>
+        <!-- Панель для отзывов -->
+        <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+            <!-- Ваш код для вывода отзывов здесь -->
+            @include('partials.catalog.reviews')
+        </div>
+
+        <!-- Панель для товаров из коллекции -->
+        <div class="tab-pane fade" id="related-products" role="tabpanel" aria-labelledby="related-products-tab">
+            <!-- Ваш код для вывода товаров из коллекции здесь -->
+            @include('partials.catalog.related-products')
         </div>
     </div>
 </div>
@@ -190,8 +138,6 @@
         </div>
     </div>
 </div>
-
-
 @endsection
 
 @section('scripts')
@@ -200,6 +146,16 @@
     $('#imageModal').on('shown.bs.modal', function () {
         $(this).find('img').click(function () {
             $(this).toggleClass('img-fluid w-100');
+        });
+    });
+
+    // Инициализация карусели и табов
+    $(document).ready(function(){
+        $('#productCarousel').carousel(); // Инициализация карусели
+
+        $('#myTab a').on('click', function (e) {
+            e.preventDefault();
+            $(this).tab('show');
         });
     });
 </script>

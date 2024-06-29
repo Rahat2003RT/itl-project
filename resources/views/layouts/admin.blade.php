@@ -43,6 +43,8 @@
             margin-bottom: 10px;
         }
     </style>
+
+    @stack('styles')
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd">
@@ -69,9 +71,14 @@
                         <a class="nav-link" href="{{ route('admin.brands.index') }}">Бренды</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.pickup-points.index') }}">Пункты выдачи</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.products.index') }}">Товары</a>
                     </li>
-
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.collections.index') }}">Коллекции</a>
+                    </li>
                 </ul>
             </div>
         </div>

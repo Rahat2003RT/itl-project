@@ -150,8 +150,16 @@ class CatalogController extends Controller
         if ($product->category && $product->category->parent) {
             $categoryPath = $product->category->getPath();
         }
+
+        $relatedProducts = Product::whereHas('collections', function ($query) use ($product) {
+            $query->whereIn('collections.id', $product->collections->pluck('id'));
+        })
+        ->where('id', '!=', $product->id)
+        ->take(5)
+        ->get();
+        
     
-        return view('catalog.show', compact('product', 'categoryPath', 'generalAttributes', 'technicalAttributes', 'additionalAttributes'));
+        return view('catalog.show', compact('product', 'categoryPath', 'generalAttributes', 'technicalAttributes', 'additionalAttributes', 'relatedProducts'));
     }
 
 }

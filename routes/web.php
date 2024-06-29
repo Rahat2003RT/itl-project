@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\Admin\AdminController;
@@ -7,9 +8,12 @@ use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\AttributeValueController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\PickupPointController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -22,6 +26,8 @@ Route::middleware(['auth', 'verified'])->group(function(){
     Route::get('/cart',  [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+    Route::post('/orders/store', [OrderController::class, 'store'])->name('orders.store');
 });
 
 
@@ -51,6 +57,11 @@ Route::middleware('auth')->group(function(){
     Route::get('profile', [UserController::class, 'profile'])->name('profile');
     Route::get('profile/edit', [UserController::class, 'edit'])->name('profile.edit');
     Route::put('profile', [UserController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/cards', [UserController::class, 'storeCard'])->name('profile.cards.store');
+    Route::delete('/profile/cards/{id}', [UserController::class, 'destroyCard'])->name('profile.cards.destroy');
+
+    Route::get('addresses/edit', [AddressController::class, 'edit'])->name('addresses.edit');
+    Route::post('addresses/update', [AddressController::class, 'update'])->name('addresses.update');
 
     Route::get('logout', [UserController::class, 'logout'])->name('logout');
 });
@@ -70,6 +81,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::post('brands', [BrandController::class, 'store'])->name('brands.store');
     Route::put('brands/{brand}/update', [BrandController::class, 'update'])->name('brands.update');
     Route::delete('brands/{brand}/destroy', [BrandController::class, 'destroy'])->name('brands.destroy');
+
+    Route::resource('pickup-points', PickupPointController::class);
 
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
     Route::post('products', [ProductController::class, 'store'])->name('products.store');
@@ -93,6 +106,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::post('attributes/{attribute}/values', [AttributeValueController::class, 'store'])->name('attribute_values.store');
     Route::put('attribute_values/{attribute}/update', [AttributeValueController::class, 'update'])->name('attribute_values.update');
     Route::delete('attribute_values/{attribute_value}/destroy', [AttributeValueController::class, 'destroy'])->name('attribute_values.destroy');
+
+    Route::resource('collections', CollectionController::class);
+    Route::get('collections/{collection}/manage', [CollectionController::class, 'manage'])->name('collections.manage');
+    Route::put('collections/{collection}/manage', [CollectionController::class, 'manageUpdate'])->name('collections.manageUpdate');
 
 });
 

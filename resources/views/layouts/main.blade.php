@@ -82,7 +82,7 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cartDropdown">
                                     @if ($cartItems->isEmpty())
-                                        <li><a class="dropdown-item" href="#">Ваша корзина пуста</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('cart.index')}}">Ваша корзина пуста</a></li>
                                     @else
                                         @foreach($cartItems as $item)
                                             <li class="dropdown-item">

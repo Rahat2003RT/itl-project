@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CartItem;
+use App\Models\PickupPoint;
+use App\Models\UserCard;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -11,8 +13,11 @@ class CartController extends Controller
 {
     public function index()
     {
+        $user = Auth::user();
         $cartItems = CartItem::where('user_id', Auth::id())->get();
-        return view('cart.index', compact('cartItems'));
+        $pickupPoints = PickupPoint::all();
+        $userCards = UserCard::where('user_id', auth()->id())->get();
+        return view('cart.index', compact('cartItems', 'pickupPoints', 'userCards', 'user'));
     }
 
     public function add(Request $request)
