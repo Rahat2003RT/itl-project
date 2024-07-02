@@ -61,10 +61,23 @@
             @else
                 <p>No reviews yet.</p>
             @endif
+            @if ($product->isFavorite())
+                <form action="{{ route('product.favorite.remove', $product->id) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-outline-danger">Удалить из избранного</button>
+                </form>
+            @else
+                <form action="{{ route('product.favorite', $product->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger">Добавить в избранное</button>
+                </form>
+
+            @endif
             <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#addToCartModal">
-                Add to Cart
+                Добавить в корзину
             </button>
-            <a href="{{ route('catalog.filter', ['category_name' => $product->category->name]) }}" class="btn btn-secondary mt-2">Back to Catalog</a>
+            <a href="{{ route('catalog.filter', ['category_name' => $product->category->name]) }}" class="btn btn-secondary mt-2">Обратно в каталог</a>
         </div>
     </div>
 
@@ -159,4 +172,30 @@
         });
     });
 </script>
+<script>
+    $(document).ready(function() {
+        $('#toggleFavorite').click(function() {
+            $.ajax({
+                url: "{{ route('products.toggleFavorite', $product->id) }}",
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Обновляем иконку сердечка
+                        $('#toggleFavorite i').toggleClass('bi-heart bi-heart-fill');
+                    } else {
+                        // Обработка ошибок, если необходимо
+                        console.error('Ошибка при выполнении запроса');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
 @endsection

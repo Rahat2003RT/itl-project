@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
+use Illuminate\Support\Facades\Auth;
 
 class Product extends Model
 {
@@ -73,5 +74,26 @@ class Product extends Model
     public function collections()
     {
         return $this->belongsToMany(Collection::class, 'collection_product');
+    }
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'product_id', 'user_id')->withTimestamps();
+    }
+
+    public function isFavorite()
+    {
+        // Проверяем, добавлен ли этот товар в избранное для текущего авторизованного пользователя
+        $user = Auth::user();
+        if (!$user) {
+            return false; // Если пользователь не авторизован, то считаем, что товар не в избранном
+        }
+
+        return $user->favorites->contains('id', $this->id);
+    }
+
+    public function viewedBy()
+    {
+        return $this->belongsToMany(User::class, 'viewed_products', 'product_id', 'user_id')->withTimestamps();
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class ProductImage extends Model
 {
@@ -16,4 +17,15 @@ class ProductImage extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($productImage) {
+            // Удаление файла изображения из папки storage/app/public/product_images
+            Storage::disk('public')->delete($productImage->image_url);
+        });
+    }
+
 }

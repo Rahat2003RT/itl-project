@@ -28,6 +28,10 @@ Route::middleware(['auth', 'verified'])->group(function(){
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
     Route::post('/orders/store', [OrderController::class, 'store'])->name('orders.store');
+    Route::post('/products/{product}/toggle-favorite', [ProductController::class, 'toggleFavorite'])->name('products.toggleFavorite');
+    Route::post('/product/{id}/favorite', [ProductController::class, 'addToFavorites'])->name('product.favorite');
+    Route::delete('/product/{id}/favorite', [ProductController::class, 'removeFromFavorites'])->name('product.favorite.remove');
+
 });
 
 
@@ -91,6 +95,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('products/{product}/manage', [ProductController::class, 'manage'])->name('products.manage');
     Route::post('products/{product}/manageUpdate', [ProductController::class, 'manageUpdate'])->name('products.manageUpdate');
     Route::delete('products/{product}/destroy', [ProductController::class, 'destroy'])->name('products.destroy');
+
 
     // Маршруты для атрибутов
     Route::get('/attributes', [AttributeController::class, 'index'])->name('attributes.index');

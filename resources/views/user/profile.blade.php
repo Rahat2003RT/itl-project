@@ -18,6 +18,9 @@
                 @else
                     <p class="card-text"><em>Адрес не указан</em></p>
                 @endif
+                <a href="{{ route('profile.edit') }}" class="btn btn-success mb-3">Сменить имя</a>
+                <br>
+                <a href="{{ route('addresses.edit') }}" class="btn btn-success mb-3">Сменить адресс</a>
             </div>
         </div>
 
