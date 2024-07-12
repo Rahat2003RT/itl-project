@@ -3,16 +3,22 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\Admin\AdminCollectionController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\AttributeValueController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PickupPointController;
+use App\Http\Controllers\Api\ApiProductController;
+use App\Http\Controllers\Manager\ManagerCollectionController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CollectionController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -76,10 +82,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::put('users/{id}/update', [UserController::class, 'update'])->name('users.update');
 
-    Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
-    Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
-    Route::put('categories/{category}/update', [CategoryController::class, 'update'])->name('categories.update');
-    Route::delete('categories/{category}/destroy', [CategoryController::class, 'destroy'])->name('categories.destroy');
+    Route::resource('categories', CategoryController::class);
 
     Route::get('brands', [BrandController::class, 'index'])->name('brands.index');
     Route::post('brands', [BrandController::class, 'store'])->name('brands.store');
@@ -88,13 +91,14 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 
     Route::resource('pickup-points', PickupPointController::class);
 
-    Route::get('products', [ProductController::class, 'index'])->name('products.index');
-    Route::post('products', [ProductController::class, 'store'])->name('products.store');
-    Route::get('products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
-    Route::put('products/{product}/update', [ProductController::class, 'update'])->name('products.update');
-    Route::get('products/{product}/manage', [ProductController::class, 'manage'])->name('products.manage');
-    Route::post('products/{product}/manageUpdate', [ProductController::class, 'manageUpdate'])->name('products.manageUpdate');
-    Route::delete('products/{product}/destroy', [ProductController::class, 'destroy'])->name('products.destroy');
+    Route::get('products', [AdminProductController::class, 'index'])->name('products.index');
+    Route::get('products/create', [AdminProductController::class, 'create'])->name('products.create');
+    Route::post('products', [AdminProductController::class, 'store'])->name('products.store');
+    Route::get('products/{product}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
+    Route::put('products/{product}/update', [AdminProductController::class, 'update'])->name('products.update');
+    Route::get('products/{product}/manage', [AdminProductController::class, 'manage'])->name('products.manage');
+    Route::post('products/{product}/manageUpdate', [AdminProductController::class, 'manageUpdate'])->name('products.manageUpdate');
+    Route::delete('products/{product}/destroy', [AdminProductController::class, 'destroy'])->name('products.destroy');
 
 
     // Маршруты для атрибутов
@@ -112,9 +116,15 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::put('attribute_values/{attribute}/update', [AttributeValueController::class, 'update'])->name('attribute_values.update');
     Route::delete('attribute_values/{attribute_value}/destroy', [AttributeValueController::class, 'destroy'])->name('attribute_values.destroy');
 
-    Route::resource('collections', CollectionController::class);
-    Route::get('collections/{collection}/manage', [CollectionController::class, 'manage'])->name('collections.manage');
-    Route::put('collections/{collection}/manage', [CollectionController::class, 'manageUpdate'])->name('collections.manageUpdate');
+    Route::resource('collections', AdminCollectionController::class);
+    Route::get('collections/{collection}/manage', [AdminCollectionController::class, 'manage'])->name('collections.manage');
+    Route::put('collections/{collection}/manage', [AdminCollectionController::class, 'manageUpdate'])->name('collections.manageUpdate');
+
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::post('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
+    Route::get('/api/products', [ApiProductController::class, 'index']);
+    Route::get('/api/categories/{category}/products', [ApiProductController::class, 'getByCategory']);
 
 });
 
@@ -126,6 +136,10 @@ Route::prefix('manager')->middleware(['auth', 'role:manager,admin'])->name('mana
     Route::put('products/{product}/update', [ManagerController::class, 'update'])->name('products.update');
     Route::delete('products/{product}/destroy', [ManagerController::class, 'destroy'])->name('products.destroy');
     Route::delete('remove-product-image/{id}', [ManagerController::class, 'removeProductImage'])->name('admin.removeProductImage');
+
+    Route::resource('collections', ManagerCollectionController::class);
+    Route::get('collections/{collection}/manage', [ManagerCollectionController::class, 'manage'])->name('collections.manage');
+    Route::put('collections/{collection}/manage', [ManagerCollectionController::class, 'manageUpdate'])->name('collections.manageUpdate');
     
 });//Пока не приступал
 
@@ -135,5 +149,10 @@ Route::get('/catalog/search', [CatalogController::class, 'search'])->name('catal
 Route::get('catalog/{category_name}', [CatalogController::class, 'index'])->name('catalog.filter');
 Route::get('catalog/product/{product_id}', [CatalogController::class, 'show'])->name('catalog.product.show');
 Route::post('/catalog/product/{id}/review', [ProductController::class, 'storeReview'])->name('catalog.product.review');
+
+Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+
 
 

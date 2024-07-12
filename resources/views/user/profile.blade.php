@@ -66,6 +66,9 @@
                                 @foreach($order->orderItems as $item)
                                     <li class="list-group-item">
                                         <strong>Продукт:</strong> {{ $item->product->name }}<br>
+                                        <div class="product-image-container">
+                                            <img src="{{ $item->product->images->isNotEmpty() ? asset('storage/' . $item->product->images->first()->image_url) : asset('storage/default/default-product.png') }}" class="product-image" alt="{{ $item->product->name }}">
+                                        </div>
                                         <strong>Количество:</strong> {{ $item->quantity }}<br>
                                         <strong>Цена за единицу:</strong> {{ $item->price }}<br>
                                         <strong>Общая стоимость:</strong> {{ $item->quantity * $item->price }}

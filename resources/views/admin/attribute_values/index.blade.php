@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container">
-        <h2>Атрибут: {{ $attribute->name }}</h2>
+        <h2>Характеристика: {{ $attribute->name }}</h2>
 
         <table class="table">
             <thead>
@@ -37,7 +37,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5">Атрибутов не найдено.</td>
+                        <td colspan="5">Значений не найдено.</td>
                     </tr>
                 @endforelse
             </tbody>

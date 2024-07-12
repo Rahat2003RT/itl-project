@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.manager')
 
 @section('title', 'Просмотр коллекций')
 
@@ -31,6 +31,6 @@
             </div>
         @endif
 
-        <a href="{{ route('admin.collections.index') }}" class="btn btn-warning">Назад к коллекциям</a>
+        <a href="{{ route('manager.collections.index') }}" class="btn btn-warning">Назад к коллекциям</a>
     </div>
 @endsection

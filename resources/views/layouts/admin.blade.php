@@ -79,6 +79,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.collections.index') }}">Коллекции</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.orders.index') }}">Заказы</a>
+                    </li>
                 </ul>
             </div>
         </div>

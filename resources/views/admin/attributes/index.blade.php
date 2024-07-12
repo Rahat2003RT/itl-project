@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', 'Attributes')
+@section('title', 'Атрибуты')
 
 @section('content')
     <div class="container">
         <h1>Атрибуты</h1>
 
-        <a href="{{ route('admin.attributes.create') }}" class="btn btn-primary mb-3">Добавить атрибут</a>
+        <a href="{{ route('admin.attributes.create') }}" class="btn btn-success mb-3">Добавить атрибут</a>
 
         <table class="table">
             <thead>
@@ -28,8 +28,8 @@
                         <td>{{ $attribute->type}}</td>
                         <td>{{ $attribute->created_at->format('d M Y H:i:s') }}</td>
                         <td>
-                            <a href="{{ route('admin.attribute_values.index', $attribute->id) }}" class="btn btn-secondary btn-sm">Управление значениями</a>
                             <a href="{{ route('admin.attributes.edit', $attribute->id) }}" class="btn btn-primary btn-sm">Редактировать</a>
+                            <a href="{{ route('admin.attribute_values.index', $attribute->id) }}" class="btn btn-warning btn-sm">Управление значениями</a>
                             <a href="{{ route('admin.attributes.destroy', $attribute->id) }}" class="btn btn-danger btn-sm"
                             onclick="event.preventDefault(); if (confirm('Вы уверены, что хотите удалить этот атрибут?')) { document.getElementById('delete-form-{{ $attribute->id }}').submit(); }">
                             Удалить
@@ -43,7 +43,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4">No attributes found.</td>
+                        <td colspan="6">Атрибуты не найдены.</td>
                     </tr>
                 @endforelse
             </tbody>

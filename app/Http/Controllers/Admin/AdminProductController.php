@@ -1,34 +1,40 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Brand;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Log;
+use App\Models\Attribute;
+use App\Models\ProductAttribute;
 
-
-class ManagerController extends Controller
+class AdminProductController extends Controller
 {
-    public function dashboard()
-    {
-        return view('manager.dashboard');
-    }
-
     public function index()
     {
-        $products = Product::where('created_by', auth()->id())->with(['categories','brand', 'images'  => function ($query) {
-            $query->orderBy('order', 'asc');
+        $products = Product::with(['category', 'brand', 'images' => function ($query) {
+            $query->orderBy('order', 'asc'); // Сортировка по возрастанию порядка (можно выбрать 'desc' для сортировки по убыванию)
         }])->paginate(10);
+        
+        
         $categories = Category::getChildCategories();
         $brands = Brand::all();
         
-        return view('manager.products.index', compact('products', 'categories', 'brands'));
+        return view('admin.products.index', compact('products', 'categories', 'brands'));
     }
+
+    public function create()
+    {
+        $categories = Category::getChildCategories();
+        $brands = Brand::all();
+        return view('admin.products.create', compact('categories', 'brands'));
+    }
+
+
 
     public function store(Request $request)
     {
@@ -42,7 +48,7 @@ class ManagerController extends Controller
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'image_order' => 'nullable|string',
         ]);
-
+    
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
@@ -51,9 +57,7 @@ class ManagerController extends Controller
             'brand_id' => $request->brand_id,
             'created_by' => auth()->id(),
         ]);
-    
 
-        // Handle images
         if ($request->hasFile('images')) {
             $order = explode(',', $request->image_order);
             $files = $request->file('images');
@@ -71,15 +75,13 @@ class ManagerController extends Controller
                 }
             }
         }
-
-        return redirect()->route('manager.products.index')->with('success', 'Product added successfully.');
+    
+        return redirect()->route('admin.products.index')->with('success', 'Товар успешно добавлен.');
     }
 
     public function edit($id)
     {
-        $product = Product::findOrFail($id); // Получаем продукт по идентификатору
-        // Здесь можете передать категории, бренды и другие данные, необходимые для формы редактирования
-
+        $product = Product::findOrFail($id);
         $categories = Category::getChildCategories();
         $brands = Brand::all();
         
@@ -94,7 +96,7 @@ class ManagerController extends Controller
             'price' => 'required|numeric',
             'category' => 'required|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:9192',
             'image_order' => 'nullable|string',
             'image_id' => 'nullable|string',
         ]);
@@ -167,27 +169,59 @@ class ManagerController extends Controller
                 }
             }
         }
-    
-        return redirect()->route('manager.products.index')->with('success', 'Product updated successfully.');
+
+        return redirect()->route('admin.products.index')->with('success', 'Продукт успешно обновлен.');
     }
-    
 
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->route('manager.products.index')->with('success', 'Product deleted successfully.');
+        return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
     }
 
-    public function removeProductImage($id)
+    public function manage(Product $product)
     {
-        try {
-            $image = ProductImage::findOrFail($id);
-            Storage::disk('public')->delete($image->image_url);
-            $image->delete();
-            return response()->json(['success' => true]);
-        } catch (ModelNotFoundException $e) {
-            Log::error("Product image with ID $id not found.");
-            return response()->json(['error' => 'Image not found'], 404);
+        // Получить категории, связанные с продуктом
+        $category = $product->category;
+
+        // Получить атрибуты с их значениями, связанные с категорией продукта
+        $attributes = Attribute::with('values')->where('category_id', $category->id)->get();
+
+        // Инициализация массива для хранения значений атрибутов
+        $attributeValues = [];
+        
+        foreach ($attributes as $attribute) {
+            $attributeValues[$attribute->id] = $attribute->values;
         }
+        
+        // Передать продукт и его категории в представление
+        return view('admin.products.manage', compact('product', 'category', 'attributes', 'attributeValues'));
+    }
+
+    public function manageUpdate(Request $request, $productId)
+    {
+        // Получение продукта
+        $product = Product::findOrFail($productId);
+    
+        // Проход по всем атрибутам, которые были переданы из формы
+        foreach ($request->input('attributes', []) as $attributeId => $attributeData) {
+            $attributeValueId = $attributeData['attribute_value_id'];
+    
+            // Проверка, было ли передано значение атрибута
+            if ($attributeValueId !== null) {
+                // Обновляем существующую запись или создаем новую
+                ProductAttribute::updateOrCreate(
+                    ['product_id' => $product->id, 'attribute_id' => $attributeId],
+                    ['attribute_value_id' => $attributeValueId]
+                );
+            } else {
+                // Удаление записи, если передано null
+                ProductAttribute::where('product_id', $product->id)
+                    ->where('attribute_id', $attributeId)
+                    ->delete();
+            }
+        }
+    
+        return redirect()->route('admin.products.index')->with('success', 'Product attributes updated successfully.');
     }
 }

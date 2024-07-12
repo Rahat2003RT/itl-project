@@ -1,31 +1,38 @@
 @extends('layouts.admin')
 
+@section('title', 'Пункты выдачи')
+
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Pickup Points</h1>
-        <a href="{{ route('admin.pickup-points.create') }}" class="btn btn-primary">Create New Pickup Point</a>
-    </div>
-    
+    <h1>Пункты выдачи</h1>
+    <a href="{{ route('admin.pickup-points.create') }}" class="btn btn-success mb-3">Создать новый пункт выдачи</a>
+
     @if($pickupPoints->isEmpty())
-        <p>No pickup points available.</p>
+        <p>Нет доступных пунктов выдачи.</p>
     @else
-        <div class="list-group">
-            @foreach ($pickupPoints as $pickupPoint)
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5>{{ $pickupPoint->name }}</h5>
-                        <p>{{ $pickupPoint->address }}</p>
-                    </div>
-                    <div>
-                        <a href="{{ route('admin.pickup-points.edit', $pickupPoint->id) }}" class="btn btn-sm btn-secondary">Edit</a>
-                        <form action="{{ route('admin.pickup-points.destroy', $pickupPoint->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
-                    </div>
-                </div>
-            @endforeach
-        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Адрес</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($pickupPoints as $pickupPoint)
+                    <tr>
+                        <td>{{ $pickupPoint->name }}</td>
+                        <td>{{ $pickupPoint->address }}</td>
+                        <td>
+                            <a href="{{ route('admin.pickup-points.edit', $pickupPoint->id) }}" class="btn btn-sm btn-primary">Редактировать</a>
+                            <form action="{{ route('admin.pickup-points.destroy', $pickupPoint->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить этот пункт выдачи?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     @endif
 @endsection

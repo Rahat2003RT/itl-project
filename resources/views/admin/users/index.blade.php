@@ -1,19 +1,19 @@
 @extends('layouts.admin')
 
 
-@section('title', 'Home page')
+@section('title', 'Пользователи')
 
 @section('content')
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Users List</h1>
+<div class="container">
+    <h1>Пользователи</h1>
 
-    <table class="table table-bordered table-striped table-hover">
-        <thead class="thead-dark">
+    <table class="table">
+        <thead>
             <tr>
                 <th>ID</th>
-                <th>Name</th>
+                <th>Имя</th>
                 <th>Email</th>
-                <th>Role</th>
+                <th>Роль</th>
             </tr>
         </thead>
         <tbody>
@@ -26,7 +26,7 @@
                         <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
                             @csrf
                             @method('PUT')
-                            <select name="role" onchange="this.form.submit()">
+                            <select name="role" class="form-control" onchange="this.form.submit()">
                                 <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>User</option>
                                 <option value="manager" {{ $user->role == 'manager' ? 'selected' : '' }}>Manager</option>
                                 <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
@@ -37,8 +37,6 @@
             @endforeach
         </tbody>
     </table>
-
-    <!-- Ссылки пагинации -->
     <div class="d-flex justify-content-center">
         {{ $users->links() }}
     </div>

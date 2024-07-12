@@ -8,8 +8,7 @@
 
         <form action="{{ route('admin.attributes.update', $attribute->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
-            @method('PUT') <!-- Используем метод PUT для обновления -->
-
+            @method('PUT')
             <div class="mb-3">
                 <label for="name" class="form-label">Название атрибута</label>
                 <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $attribute->name) }}" required>
@@ -33,7 +32,7 @@
             <div class="mb-3">
                 <label for="category" class="form-label">Категория</label>
                 <select class="form-select @error('category') is-invalid @enderror" id="category" name="category" required>
-                    <option value="">Без категорий</option>
+                    <option value="">Категория не выбрана</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}" {{ old('category', $attribute->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                     @endforeach

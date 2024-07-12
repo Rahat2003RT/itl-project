@@ -49,36 +49,53 @@
         <div class="col-md-6">
             <!-- Информация о продукте -->
             <h1>{{ $product->name }}</h1>
-            @if($product->description)
-                <p>Описание: {{ $product->description }}</p>
-            @endif
-            <p>{{ $product->price }} $</p>
-            @if($product->brand)
-                <p>Brand: {{ $product->brand->name }}</p>
-            @endif
-            @if($product->reviews->isNotEmpty())
-                <p>Average Rating: {{ $product->averageRating() }}/5</p>
-            @else
-                <p>No reviews yet.</p>
-            @endif
-            @if ($product->isFavorite())
-                <form action="{{ route('product.favorite.remove', $product->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-outline-danger">Удалить из избранного</button>
-                </form>
-            @else
-                <form action="{{ route('product.favorite', $product->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-outline-danger">Добавить в избранное</button>
-                </form>
 
+            <!-- Кнопка "Добавить в избранное" -->
+            <div class="mb-3">
+                @if ($product->isFavorite())
+                    <form action="{{ route('product.favorite.remove', $product->id) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="fas fa-heart"></i> Удалить из избранного
+                        </button>
+                    </form>
+                @else
+                    <form action="{{ route('product.favorite', $product->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="far fa-heart"></i> Добавить в избранное
+                        </button>
+                    </form>
+                @endif
+            </div>
+
+            <!-- Описание продукта -->
+            @if($product->description)
+                <p><strong>Описание:</strong> {{ $product->description }}</p>
             @endif
-            <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#addToCartModal">
+
+            <!-- Цена продукта -->
+            <p><strong>Цена:</strong> {{ $product->price }} $</p>
+
+            <!-- Бренд продукта -->
+            @if($product->brand)
+                <p><strong>Бренд:</strong> {{ $product->brand->name }}</p>
+            @endif
+
+            <!-- Рейтинг продукта -->
+            @if($product->reviews->isNotEmpty())
+                <p><strong>Средний рейтинг:</strong> {{ $product->averageRating() }}/5</p>
+            @else
+                <p><strong>Отзывов пока нет.</strong></p>
+            @endif
+
+            <!-- Кнопка "Добавить в корзину" -->
+            <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addToCartModal">
                 Добавить в корзину
             </button>
-            <a href="{{ route('catalog.filter', ['category_name' => $product->category->name]) }}" class="btn btn-secondary mt-2">Обратно в каталог</a>
         </div>
+
     </div>
 
     <ul class="nav nav-tabs" id="myTab" role="tablist">

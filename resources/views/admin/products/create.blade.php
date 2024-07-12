@@ -65,60 +65,50 @@
 @section('content')
 <div class="container mt-5">
 
-    <h1>Товары</h1>
+    <h2>Добавить новый товар</h2>
 
-    <a href="{{ route('admin.products.create') }}" class="btn btn-success mb-3">Добавить товар</a>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Название</th>
-                <th>Описание</th>
-                <th>Цена</th>
-                <th>Категория</th>
-                <th>Бренд</th>
-                <th>Изображения</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($products as $product)
-                <tr>
-                    <td>{{ $product->id }}</td>
-                    <td>{{ $product->name }}</td>
-                    <td class="description-cell" title="{{ $product->description }}">{{ $product->description }}</td>
-                    <td>{{ $product->price }}</td>
-                    <td>{{ $product->category->name }}</td>
-                    <td>{{ $product->brand ? $product->brand->name : '' }}</td>
-                    <td>
-                        @if ($product->images->isNotEmpty())
-                            <div id="images-container">
-                                @foreach ($product->images as $image)
-                                    <img src="{{ asset('storage/' . $image->image_url) }}" data-image-id="{{ $image->order }}" alt="Изображение товара" class="preview-image">
-                                @endforeach
-                            </div>
-                        @else
-                            Нет изображений
-                        @endif
-                    </td>
-                    <td>
-                        <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-primary btn-sm">Редактировать</a>
-                        <a href="{{ route('admin.products.manage', $product->id) }}" class="btn btn-warning btn-sm">Управление атрибутами</a>
-                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить этот товар?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <div class="d-flex justify-content-center">
-        {{ $products->links() }}
-    </div>
+    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="mb-3">
+            <label for="name" class="form-label">Название товара</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Описание товара</label>
+            <textarea class="form-control" id="description" name="description" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="price" class="form-label">Цена товара</label>
+            <input type="number" class="form-control" id="price" name="price" required>
+        </div>
+        <div class="mb-3">
+            <label for="category" class="form-label">Категория</label>
+            <select class="form-control" id="category" name="category" required>
+                @foreach ($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="brand_id" class="form-label">Бренд</label>
+            <select class="form-control" id="brand_id" name="brand_id">
+                <option value="">Нет</option>
+                @foreach ($brands as $brand)
+                    <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="images" class="form-label">Изображения товара</label>
+            <input type="file" class="form-control" id="images" name="images[]" multiple>
+        </div>
+        <div class="mb-3">
+            <p>Удерживайте и перетаскивайте для определения порядка:</p>
+            <ul id="sortable" class="list-group d-flex flex-wrap flex-row"></ul>
+            <input type="hidden" name="image_order" id="image_order">
+        </div>
+        <button type="submit" class="btn btn-primary">Добавить товар</button>
+    </form>
 </div>
 
 <script>

@@ -28,7 +28,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <input type="hidden" name="product_id" value="{{ $item->product_id }}">
-                                    <button type="submit" class="btn btn-danger">Удалить</button>
+                                    <button type="submit" class="btn btn-danger">Убрать</button>
                                 </form>
                             </td>
                         </tr>
@@ -37,11 +37,9 @@
             </table>
 
             <div class="mt-4">
-                <!-- Проверка наличия адреса у пользователя -->
                 @if(!$user->address)
                     <p class="alert alert-warning">У вас не указан адрес доставки. Пожалуйста, добавьте адрес в вашем профиле.</p>
                 @else
-                    <!-- Кнопка для открытия модального окна -->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#checkoutModal">
                         Оформить заказ
                     </button>

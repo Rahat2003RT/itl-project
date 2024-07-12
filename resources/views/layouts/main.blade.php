@@ -32,6 +32,18 @@
             padding: 0.25rem 0.5rem;
         }
     </style>
+    <style>
+        .product-image-container {
+            width: 100%;
+            max-width: 200px; /* Устанавливаем максимальную ширину контейнера */
+            margin: 0 auto; /* Центрируем изображение */
+        }
+        .product-image {
+            width: 100%; /* Изображение будет масштабироваться в пределах контейнера */
+            height: auto; /* Сохраняем соотношение сторон */
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
@@ -43,10 +55,13 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{{ route('home') }}">Home</a>
+                        <a class="nav-link" aria-current="page" href="{{ route('home') }}">Главная</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{{ route('catalog.index') }}">Catalog</a>
+                        <a class="nav-link" aria-current="page" href="{{ route('catalog.index') }}">Каталог</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{{ route('favorites.index') }}">Избранное</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -60,22 +75,32 @@
                             </li>
                             @if (auth()->check() && auth()->user()->role == 'admin')
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('admin.dashboard')}}">Admin</a>
+                                    <a class="nav-link" href="{{ route('admin.dashboard')}}">Админ</a>
                                 </li>
                             @endif
                             @if (auth()->check() && (auth()->user()->role == 'admin' || auth()->user()->role == 'manager'))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('manager.dashboard')}}">Manager</a>
+                                    <a class="nav-link" href="{{ route('manager.dashboard')}}">Мэнеджер</a>
                                 </li>
                             @endif
                             <li class="nav-item dropdown">
                                 <a class="nav-link" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-bell"></i>
+                                    @if ($notifications->isNotEmpty())
+                                        <span class="badge bg-danger">{{ $notifications->count() }}</span>
+                                    @endif
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
-                                    <li><a class="dropdown-item" href="#">Уведомлений пока нет</a></li>
+                                    @forelse ($notifications as $notification)
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('notifications.index') }}">{{ $notification->data }}</a>
+                                        </li>
+                                    @empty
+                                        <li><span class="dropdown-item text-muted">Уведомлений пока нет</span></li>
+                                    @endforelse
                                 </ul>
                             </li>
+
                             <li class="nav-item dropdown cart-dropdown">
                                 <a class="nav-link" href="#" id="cartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-shopping-cart"></i>

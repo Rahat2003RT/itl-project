@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.manager')
 
 @section('title', 'Создание коллекций')
 
@@ -6,7 +6,7 @@
     <div class="container">
         <h1>Создание коллекций</h1>
 
-        <form action="{{ route('admin.collections.store') }}" method="POST">
+        <form action="{{ route('manager.collections.store') }}" method="POST">
             @csrf
             <div class="mb-3">
                 <label for="name" class="form-label">Название</label>

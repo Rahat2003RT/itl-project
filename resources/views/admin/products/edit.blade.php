@@ -50,7 +50,7 @@
         <input type="hidden" name="image_id" id="image_id">
     </div>
     <button type="submit" class="btn btn-primary">Update Product</button>
-</form>
+</form> 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // Получаем контейнер с изображениями
@@ -122,41 +122,6 @@ function updateImageOrder() {
     $('#image_id').val(ids.join(','));
 }
 
-
-// // Функция для удаления изображения
-// function removeImage(imageElement) {
-//     var imageId = imageElement.data('image-id');
-//     if (imageId) {
-//         $.ajax({
-//             url: '{{ url('/admin/products/image') }}/' + imageId,
-//             type: 'DELETE',
-//             data: {
-//                 _token: '{{ csrf_token() }}'
-//             },
-//             success: function(response) {
-//                 if (response.success) {
-//                     imageElement.remove();
-//                     updateImageOrder();
-//                 } else {
-//                     alert('Error removing image');
-//                 }
-//             },
-//             error: function() {
-//                 alert('Error removing image');
-//             }
-//         });
-//     } else {
-//         imageElement.remove();
-//         updateImageOrder();
-//     }
-// }
-
-// // Обработчик клика для удаления изображений
-// $('#sortable').on('click', 'li', function() {
-//     if (confirm('Are you sure you want to remove this image?')) {
-//         removeImage($(this));
-//     }
-// });
 
 $(document).ready(function() {
     updateImageOrder();

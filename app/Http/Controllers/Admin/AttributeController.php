@@ -26,7 +26,7 @@ class AttributeController extends Controller
         $request->validate([
             'name' => ['required', 'max:255'],
             'type' => ['required', 'string', 'in:Общая характеристика,Дополнительная характеристика,Техническая характеристика'],
-            'category' => ['required', 'exists:categories,id'], // Валидация существования категории
+            'category' => ['required', 'exists:categories,id'],
         ]);
     
         Attribute::create([
@@ -35,7 +35,7 @@ class AttributeController extends Controller
             'category_id' => $request->category,
         ]);
     
-        return redirect()->route('admin.attributes.index')->with('success', 'Attribute added successfully.');
+        return redirect()->route('admin.attributes.index')->with('success', 'Атрибут успешно добавлен.');
     }
 
     public function edit(Attribute $attribute)
@@ -49,7 +49,7 @@ class AttributeController extends Controller
         $request->validate([
             'name' => ['required', 'max:255'],
             'type' => ['required', 'string', 'in:Общая характеристика,Дополнительная характеристика,Техническая характеристика'],
-            'category' => ['required', 'exists:categories,id'], // Валидация существования категории
+            'category' => ['required', 'exists:categories,id'],
         ]);
 
         $attribute->update([
@@ -58,15 +58,13 @@ class AttributeController extends Controller
             'category_id' => $request->category,
         ]);
 
-        return redirect()->route('admin.attributes.index')->with('success', 'Attribute updated successfully.');
+        return redirect()->route('admin.attributes.index')->with('success', 'Атрибут успешно обновлен.');
     }
 
     public function destroy(Attribute $attribute)
     {
         $attribute->delete();
 
-        return redirect()->route('admin.attributes.index')->with('success', 'Attribute deleted successfully.');
+        return redirect()->route('admin.attributes.index')->with('success', 'Атрибут успешно удален.');
     }
-    
-    
 }

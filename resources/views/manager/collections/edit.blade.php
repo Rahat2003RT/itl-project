@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.manager')
 
 @section('title', 'Редактирование коллекций')
 
@@ -6,7 +6,7 @@
     <div class="container">
         <h1>Редактирование коллекций: {{ $collection->name }}</h1>
 
-        <form action="{{ route('admin.collections.update', $collection->id) }}" method="POST">
+        <form action="{{ route('manager.collections.update', $collection->id) }}" method="POST">
             @csrf
             @method('PUT')
 

@@ -15,10 +15,23 @@ class CategoryController extends Controller
         return view('admin.categories.index', compact('categories'));
     }
 
+    public function create()
+    {
+        $categories = Category::all();
+        return view('admin.categories.create', compact('categories'));
+    }
+
     public function store(StoreCategoryRequest $request)
     {
         Category::create($request->validated());
-        return redirect()->route('admin.categories.index')->with('success', 'Category added successfully.');
+        return redirect()->route('admin.categories.index')->with('success', 'Категория успешно добавлена.');
+    }
+
+    public function edit($id)
+    {
+        $category = Category::find($id);
+        $categories = Category::all();
+        return view('admin.categories.edit', compact('category', 'categories'));
     }
 
     public function update(UpdateCategoryRequest $request, Category $category)
@@ -29,12 +42,12 @@ class CategoryController extends Controller
             $newParent = Category::findOrFail($request->parent_id);
 
             if ($newParent->isDescendantOf($category)) {
-                return redirect()->back()->withErrors(['parent_id' => 'Cannot set parent category as descendant of itself.']);
+                return redirect()->back()->withErrors(['parent_id' => 'Невозможно установить родительскую категорию как потомка самой себя.']);
             }
         }
 
         $category->update($request->only('name', 'parent_id'));
-        return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
+        return redirect()->route('admin.categories.index')->with('success', 'Категория успешно обновлена.');
     }
 
     public function destroy(Category $category)
@@ -42,7 +55,7 @@ class CategoryController extends Controller
         // Удаляем категорию и все её дочерние категории рекурсивно
         $this->deleteCategoryAndChildren($category);
     
-        return redirect()->route('admin.categories.index')->with('success', 'Category and its subcategories deleted successfully.');
+        return redirect()->route('admin.categories.index')->with('success', 'Категория и ее подкатегории успешно удалены.');
     }
     
     private function deleteCategoryAndChildren(Category $category)
@@ -66,5 +79,4 @@ class CategoryController extends Controller
             $product->delete();
         }
     }
-    
 }

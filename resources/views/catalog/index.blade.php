@@ -96,7 +96,11 @@
                 @foreach($products as $product)
                     <div class="col-md-4">
                         <div class="card mb-4">
-                            <img src="{{ $product->images->isNotEmpty() ? asset('storage/' . $product->images->first()->image_url) : asset('storage/default/default-product.png') }}" class="card-img-top img-fluid" alt="{{ $product->name }}">
+                            @php
+                                $mainImage = $product->images()->orderBy('order', 'asc')->first();
+                                $imageUrl = $mainImage ? asset('storage/' . $mainImage->image_url) : asset('storage/default/default-product.png');
+                            @endphp
+                            <img src="{{ $imageUrl }}" class="card-img-top img-fluid" alt="{{ $product->name }}">
                             <div class="card-body">
                                 <h5 class="card-title">{{ $product->name }}</h5>
                                 <p class="card-text">{{ $product->price }}</p>

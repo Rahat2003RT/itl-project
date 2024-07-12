@@ -1,7 +1,7 @@
 @extends('layouts.manager')
 
 
-@section('title', 'Home page')
+@section('title', 'Менеджер: товары')
 
 @section('content')
 <div class="container mt-5">

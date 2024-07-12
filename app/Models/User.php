@@ -74,4 +74,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Product::class, 'viewed_products', 'user_id', 'product_id')->withTimestamps();
     }
 
+    public function isManager()
+    {
+        return in_array($this->role, ['manager', 'admin']);
+    }
+
 }
